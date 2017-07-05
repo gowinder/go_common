@@ -42,7 +42,7 @@ func (self *RedisClient) ReturnToPool(){
 	}
 }
 
-func (self *RedisClient) MGet(keys []string) *redis.SliceCmd {
+func (self *RedisClient) MultiGet(keys []string) *redis.SliceCmd {
 	args := make([]interface{}, 1 + len(keys))
 	args[0] = "mget"
 	for i, key := range keys {
@@ -53,7 +53,7 @@ func (self *RedisClient) MGet(keys []string) *redis.SliceCmd {
 	return cmd
 }
 
-func (self *RedisClient) MDel(keys []string) *redis.SliceCmd {
+func (self *RedisClient) MultiDel(keys []string) *redis.SliceCmd {
 	args := make([]interface{}, 1 + len(keys))
 	args[0] = "del"
 	for i, key := range keys {
