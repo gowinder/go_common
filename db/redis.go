@@ -42,6 +42,29 @@ func (self *RedisClient) ReturnToPool(){
 	}
 }
 
+func (self *RedisClient) MGet(keys []string) *redis.SliceCmd {
+	args := make([]interface{}, 1 + len(keys))
+	args[0] = "mget"
+	for i, key := range keys {
+		args[1+i] = key
+	}
+	cmd := redis.NewSliceCmd(args...)
+	self.Client.Process(cmd)
+	return cmd
+}
+
+func (self *RedisClient) MDel(keys []string) *redis.SliceCmd {
+	args := make([]interface{}, 1 + len(keys))
+	args[0] = "del"
+	for i, key := range keys {
+		args[1+i] = key
+	}
+	cmd := redis.NewSliceCmd(args...)
+	self.Client.Process(cmd)
+	return cmd
+}
+
+
 
 type RedisClientPool struct{
 	sync.Mutex
