@@ -11,6 +11,12 @@ var redisAddr string = "127.0.0.1:6379"
 var redisPwd string = "asdf"
 var redisDb int = 0
 
+var mysqlAddr string = "127.0.0.1"
+var mysqlUser string = "root"
+var mysqlPwd	string = "asdf"
+var mysqlPort	int = 3306
+var mysqlDb string = "test"
+
 func main() {
 	fmt.Println("start svpn cache gate  version 0.1.3 ...")
 
@@ -28,7 +34,22 @@ func main() {
 
 }
 func testMysql() {
+	client := &db.MysqlClient{Addr: mysqlAddr, User: mysqlUser, Pwd: mysqlPwd, Port: mysqlPort, Db: mysqlDb}
+	err := client.Init(false)
+	if err != nil {
+		fmt.Println("testMysql init failed, ", err)
+	}
 
+	rows, err := client.Client.Query("select count(0) from testdata")
+	if err != nil {
+		fmt.Println("testmysql query failed, ", err)
+	}
+
+	var count int
+	if err := rows.Scan(&count); err != nil {
+		fmt.Println("testmysql scan row failed, ", err)
+	}
+	fmt.Println("testmysql scan row result: ", count)
 }
 
 func testRedis() {
