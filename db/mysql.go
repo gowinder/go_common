@@ -36,3 +36,26 @@ func (self *MysqlClient) Init(ping bool) error {
 
 	return err
 }
+
+/**
+检查表是否存在，不存在就建表
+ */
+func (self *MysqlClient) CheckToCreateTable(tableName string, createSql string) error{
+	sql := fmt.Sprintf("SHOW TABLES LIKE '%s'", tableName)
+	rows, err := self.Client.Query(sql)
+	if err != nil{
+		println("checkToCreateMysqlTable check table ", sql, "faield:", err)
+		return err
+	}
+
+	cols, _ := rows.Columns()
+	if cols == nil{
+		_, err := self.Client.Exec(createSql)
+		if err != nil{
+			println("checkToCreateMysqlTable create table ", createSql, "faield:", err)
+			return err
+		}
+	}
+
+	return nil
+}

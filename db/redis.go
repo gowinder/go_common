@@ -53,13 +53,14 @@ func (self *RedisClient) MultiGet(keys []string) *redis.SliceCmd {
 	return cmd
 }
 
-func (self *RedisClient) MultiDel(keys []string) *redis.SliceCmd {
+func (self *RedisClient) MultiDel(keys []string) *redis.IntCmd {
+	self.Client.Del()
 	args := make([]interface{}, 1 + len(keys))
 	args[0] = "del"
 	for i, key := range keys {
 		args[1+i] = key
 	}
-	cmd := redis.NewSliceCmd(args...)
+	cmd := redis.NewIntCmd(args...)
 	self.Client.Process(cmd)
 	return cmd
 }
