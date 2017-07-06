@@ -48,8 +48,11 @@ func (self *MysqlClient) CheckToCreateTable(tableName string, createSql string) 
 		return err
 	}
 
-	cols, _ := rows.Columns()
-	if cols == nil{
+	t := ""
+	rows.Next()
+	err = rows.Scan(&t)
+	rows.Close()
+	if err != nil {
 		_, err := self.Client.Exec(createSql)
 		if err != nil{
 			println("checkToCreateMysqlTable create table ", createSql, "faield:", err)
