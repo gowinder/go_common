@@ -37,6 +37,11 @@ func (self *MysqlClient) Init(ping bool) error {
 	return err
 }
 
+func (self *MysqlClient) Close(){
+	self.Client.Close()
+	fmt.Println("MysqlClient closed")
+}
+
 /**
 检查表是否存在，不存在就建表
  */

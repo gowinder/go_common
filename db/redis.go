@@ -36,6 +36,12 @@ func (self *RedisClient) Init(ping bool) error {
 	return nil
 }
 
+
+func (self *RedisClient) Close(){
+	self.Client.Close()
+	fmt.Println("RedisClient closed")
+}
+
 func (self *RedisClient) ReturnToPool(){
 	if self.Pool != nil{
 		self.Pool.ReturnClient(self)
