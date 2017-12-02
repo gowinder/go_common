@@ -5,30 +5,49 @@ import (
 	"github.com/go-redis/redis"
 	"fmt"
 	"sync"
+	"log"
 )
+
+type RedisInfo struct {
+	Addr string
+	Pwd  string
+	Db   int
+}
+
+func (self *RedisInfo) ParseFromString(str string) bool {
+	n, err := fmt.Sscanf(str, "%s %s %d", &self.Addr, &self.Pwd, &self.Db)
+	if err != nil {
+		log.Printf("ParseFromString %s error %v", str, err)
+		return false
+	}
+	if n != 3 {
+		log.Printf("ParseFromString %s read not match", str)
+		return false
+	}
+
+	return true
+}
 
 type RedisClient struct{
 	Client 	*redis.Client
-	Addr	string
-	Pwd		string
-	Db		int
+	Info	RedisInfo
 
 	Pool	*RedisClientPool
 }
 
 func (self *RedisClient) Init(ping bool) error {
 	self.Client = redis.NewClient(&redis.Options{
-		Addr:     self.Addr,
-		Password: self.Pwd, // no password set
-		DB:       self.Db,  // use default DB
+		Addr:     self.Info.Addr,
+		Password: self.Info.Pwd, // no password set
+		DB:       self.Info.Db,  // use default DB
 	})
 
 	if ping{
 		_, err := self.Client.Ping().Result()
 		if err == nil{
-			fmt.Println("RedisClient.Init ping", self.Addr, "ok")
+			fmt.Println("RedisClient.Init ping", self.Info.Addr, "ok")
 		}else {
-			fmt.Println("RedisClient.Init ping", self.Addr, "failed, err:", err)
+			fmt.Println("RedisClient.Init ping", self.Info.Addr, "failed, err:", err)
 			return err
 		}
 	}
@@ -89,7 +108,7 @@ func (self *RedisClientPool) Init(addr string, pwd string, db int, cap int, ping
 	fmt.Println("RedisClientPool.Init begin, capacity is", cap)
 
 	for i := 0; i < cap; i++{
-		self.pool[i] = &RedisClient{Addr:addr,Pwd:pwd,Db:db}
+		self.pool[i] = &RedisClient{ Info:RedisInfo{Addr:addr,Pwd:pwd,Db:db}}
 		redisClient := self.pool[i]
 		redisClient.Pool = self
 

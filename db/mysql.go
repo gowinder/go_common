@@ -19,6 +19,10 @@ type MysqlClient struct{
 func (self *MysqlClient) Init(ping bool) error {
 	con := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8", self.User, self.Pwd, self.Addr, self.Port, self.Db)
 
+	return self.InitByString(con, ping)
+}
+
+func (self *MysqlClient) InitByString(con string, ping bool) error{
 	var err error
 	self.Client, err = sql.Open("mysql", con)
 	if err != nil{
