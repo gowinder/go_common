@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sync"
 	"log"
+	"errors"
 )
 
 type RedisInfo struct {
@@ -14,6 +15,9 @@ type RedisInfo struct {
 	Db   int
 }
 
+/**
+@param str="ip:port password dbindex"
+ */
 func (self *RedisInfo) ParseFromString(str string) bool {
 	n, err := fmt.Sscanf(str, "%s %s %d", &self.Addr, &self.Pwd, &self.Db)
 	if err != nil {
@@ -118,6 +122,31 @@ func (self *RedisClientPool) Init(addr string, pwd string, db int, cap int, ping
 		}
 	}
 
+	return nil
+}
+
+/**
+@param str="ip:port password dbindex"
+ */
+func (self *RedisClientPool) InitFromString(str string, cap int, pingTest bool, breadIfError bool) error{
+	self.Lock()
+	defer self.Unlock()
+	self.pool = make([]*RedisClient, cap)
+	fmt.Println("RedisClientPool.Init begin, capacity is", cap)
+
+	for i := 0; i < cap; i++{
+		self.pool[i] = &RedisClient{ Info:RedisInfo{}}
+		if !self.pool[i].Info.ParseFromString(str){
+			return errors.New("RedisClientPool.InitFromString failed")
+		}
+		redisClient := self.pool[i]
+		redisClient.Pool = self
+
+		err := redisClient.Init(pingTest)
+		if err != nil && breadIfError{
+			return err
+		}
+	}
 
 	return nil
 }

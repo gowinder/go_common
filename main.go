@@ -18,7 +18,7 @@ var mysqlPort	int = 3306
 var mysqlDb string = "test"
 
 func main() {
-	fmt.Println("start svpn cache gate  version 0.1.5 ...")
+	fmt.Println("start svpn cache gate  version 0.1.6 ...")
 
 
 	//testRedis()
@@ -33,6 +33,12 @@ func main() {
 	//testMysql()
 	testRedisString()
 	testMysqlString()
+
+	err := db.GlobalRedisClientPool.InitFromString("192.168.121.2:6379 asdf 0", 50, true, true)
+	if err != nil {
+		fmt.Println("GlobalRedisClientPool.Init error ", err)
+		return
+	}
 
 }
 func testMysql() {
