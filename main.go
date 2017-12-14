@@ -18,7 +18,7 @@ var mysqlPort	int = 3306
 var mysqlDb string = "test"
 
 func main() {
-	fmt.Println("start svpn cache gate  version 0.1.6 ...")
+	fmt.Println("start svpn cache gate  version 0.1.7 ...")
 
 
 	//testRedis()
@@ -30,7 +30,8 @@ func main() {
 	//}
 
 
-	//testMysql()
+
+	testMongoString()
 	testRedisString()
 	testMysqlString()
 
@@ -38,6 +39,21 @@ func main() {
 	if err != nil {
 		fmt.Println("GlobalRedisClientPool.Init error ", err)
 		return
+	}
+
+
+}
+func testMongoString() {
+	client := &db.MongoDbClient{}
+
+	err := client.InitByString("mongodb://192.168.121.2:27017/test", true)
+	if err != nil {
+		fmt.Println("testMongoString init failed, ", err)
+	}
+
+	err = client.Client.DB("").C("tt").Insert(&db.MongoDbClient{})
+	if err != nil {
+		fmt.Println("testMongoString insert failed, ", err)
 	}
 
 }
