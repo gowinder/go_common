@@ -17,8 +17,11 @@ var mysqlPwd	string = "asdf"
 var mysqlPort	int = 3306
 var mysqlDb string = "test"
 
+
+const VERSION string = "0.2.0"
+
 func main() {
-	fmt.Println("start svpn cache gate  version 0.1.7 ...")
+	fmt.Println("start svpn cache gate  version ", VERSION)
 
 
 	//testRedis()
